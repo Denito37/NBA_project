@@ -1,4 +1,4 @@
 
 def extract():
-    data = 0
+    data = []
     return data
