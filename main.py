@@ -2,7 +2,7 @@
 Entry point for ETL pipeline
 """
 from src.utils.logger import get_logger
-from src.extract.extract import extract
+from src.extract.extract import extract_players_stats, extract_team_stats
 from src.transform.transform import transform
 from src.load.load import load_to_sql
 
@@ -15,15 +15,18 @@ def main():
     try:
         logger.info("Starting ETL job...")
 
-        data = extract()
+        knicks_team_data = extract_team_stats('NYK')
+        player_data = extract_players_stats([],'NYK')
 
-        cleaned_data = transform(data)
+        cleaned_team_data = transform(knicks_team_data)
+        cleaned_player_data = transform(player_data)
 
-        load_to_sql(cleaned_data)
+        load_to_sql(cleaned_team_data)
+        load_to_sql(cleaned_player_data)
         
         logger.info("ETL job completed successfully")
-    except Exception as e:
-        logger.error(f'Pipeline failed: {e}')
+    except TimeoutError as e:
+        logger.error('Pipeline failed: %s',e)
 
 if __name__ == "__main__":
     main()
