@@ -12,7 +12,7 @@ def extract_team_stats(team_code:str) -> pd.DataFrame:
     try:
         data = pd.DataFrame(teams.get_teams())
         team_id = data.loc[data['abbreviation'] == team_code,'id']
-        team_games= leaguegamefinder.LeagueGameFinder(team_id_nullable=team_id).get_data_frames()[0]
+        team_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=team_id).get_data_frames()[0]
     except TimeoutError as e:
         print(f'Timeout Error occured: {e}')
 
