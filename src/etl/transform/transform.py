@@ -3,12 +3,12 @@
 """
 import pandas as pd
 
-games_columns = ['SEASON_ID','TEAM_NAME','GAME_DATE','MATCHUP','WL','PTS','PLUS_MINUS']
-players_columns = ['id','full_name','is_active','team']
+game_stats_columns = ['SEASON_ID','TEAM_NAME','GAME_DATE','MATCHUP','WL','PTS',
+                'FGA','FG_PCT','FG3A','FG3_PCT','FTA','FT_PCT','PLUS_MINUS']
 player_stats_columns = ['PLAYER_ID','NAME','SEASON_ID','TEAM_ABBREVIATION',
                         'PLAYER_AGE','FGM','FG3M','REB','AST','GS','GP']
 
-def transform_games(data:pd.DataFrame, season_id:str|None = None):
+def transform_games(data:pd.DataFrame, season_id:str|None = None) -> pd.DataFrame:
     """
     transform game data
     """
@@ -17,33 +17,25 @@ def transform_games(data:pd.DataFrame, season_id:str|None = None):
             data = data.loc[data['SEASON_ID'] == season_id,:]
     except pd.errors.DataError as e:
         print(f'Data error occured: {e}')
-    return data[games_columns]
+    return data[game_stats_columns]
 
-def transform_player(data:pd.DataFrame, players_list:list[str]|None = None):
-    """
-        transform player data
-    """
-    try:
-        if players_list is not None:
-            data = data.loc[data['full_name'].isin(players_list),:]  
-    except pd.errors.DataError as e:
-        print(f'Data Error occured: {e}')
-    return data[players_columns]
 
-def transform_player_stats(data:pd.DataFrame,players_list:list[str]|None = None):
+def transform_player_stats(data:pd.DataFrame,players_list:list[str]) -> pd.DataFrame:
     """
         transform player data stats
     """
     try:
-        if players_list is not None:
-            players_id = get_players_id(data, players_list)
-            for player_id, player_name in players_id.items():
-                data.loc[data['PLAYER_ID'] == player_id, 'NAME'] = player_name
+        players_id = get_players_id(data, players_list)
+        for player_id, player_name in players_id.items():
+            data.loc[data['PLAYER_ID'] == player_id, 'NAME'] = player_name
+        data = get_average_stats(data[player_stats_columns])
+        data = melt_table(data)
     except pd.errors.DataError as e:
         print(f'Data Error occured: {e}')
-    return data[player_stats_columns]
+    return data
 
-def get_players_id(data:pd.DataFrame,players_list:list[str]):
+# Helper Functions
+def get_players_id(data:pd.DataFrame,players_list:list[str]) -> dict[int,str]:
     """
         get dictionary of player's names & their id
     """
@@ -54,8 +46,34 @@ def get_players_id(data:pd.DataFrame,players_list:list[str]):
 
     return id_to_name
 
-def get_average_stats():
+def get_average_stats(data:pd.DataFrame) -> pd.DataFrame:
     """
-        get
+        get average of essential stats
     """
-    
+    data['FGMA'] = (data['FGM']/data['GP']) * 2
+    data['FG3MA'] = (data['FG3M']/data['GP']) * 3
+    data['FTMA'] = data['FTM']/data['GP']
+    data['POINTS_PG'] = data['FG3MA'] + data['FGMA'] + data['FTMA']
+    data['REB_PG'] = data['REB']/data['GP']
+    data['AST_PG'] = data['AST']/data['GP']
+
+    player_stats_avg_df = data.groupby('NAME',as_index=False).agg({
+    'SEASONS_PLAYED':'mean',
+    'REB_PG':'mean',
+    'AST_PG':'mean',
+    'POINTS_PG': 'mean',
+    })
+    player_stats_avg_df = player_stats_avg_df.sort_values(by='POINTS_PG', ascending=False)
+
+    return player_stats_avg_df
+
+def melt_table(data:pd.DataFrame) -> pd.DataFrame:
+    """
+        create table of each stat of a player as a row
+    """
+    data = data[player_stats_columns].melt(
+    id_vars='NAME',
+    var_name='STATS',
+    value_name='VALUE'
+    )
+    return data

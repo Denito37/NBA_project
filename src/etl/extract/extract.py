@@ -2,33 +2,25 @@
 Docstring for src.extract.extract
 """
 from nba_api.stats.endpoints import playercareerstats, leaguegamefinder
-from nba_api.stats.static import teams, players
 import pandas as pd
 
-def extract_team_stats(team_code:str) -> pd.DataFrame:
+def extract_team_stats(team_code:str|None = None) -> pd.DataFrame:
     """
     extract data on NBA team's games
+    optional team_code parameter to filter data based on what team played
     """
     try:
-        data = pd.DataFrame(teams.get_teams())
-        team_id = data.loc[data['abbreviation'] == team_code,'id']
-        team_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=team_id).get_data_frames()[0]
+        if team_code is not None:
+            team_games = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
+            team_games = team_games.loc[team_games['TEAM_ABBREVIATION'] == team_code]
+        else:
+            team_games = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
     except TimeoutError as e:
         print(f'Timeout Error occured: {e}')
 
     return team_games
 
-def extract_players() -> pd.DataFrame:
-    """
-    extract data on all players
-    """
-    try:
-        data = pd.DataFrame(players.get_players())
-    except TimeoutError as e:
-        print(f'Timeout Error occured: {e}')
-    return data
-
-def extract_players_stats(players_id:list[str], team_code:str = '') -> pd.DataFrame:
+def extract_players_stats(players_id:list[str], team_code:str|None = None) -> pd.DataFrame:
     """
     extracts data on list of player's id provided
     optional team_code parameter to filter data based on when they player on a certain team
@@ -39,7 +31,7 @@ def extract_players_stats(players_id:list[str], team_code:str = '') -> pd.DataFr
         for player in players_id:
             player_career = playercareerstats.PlayerCareerStats(player_id=player)
             player_stats = player_career.career_totals_regular_season.get_data_frame()
-            if team_code != '':
+            if team_code is not None:
                 player_team_stats = player_stats.loc[player_stats['TEAM_ABBREVIATION'] == team_code]
                 team_df = pd.concat([team_df,player_team_stats], ignore_index=True)
             else:
