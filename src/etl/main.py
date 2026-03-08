@@ -40,6 +40,7 @@ def main():
         logger.info("ETL job completed successfully")
     except TimeoutError as e:
         logger.error('Pipeline failed: %s',e)
+        raise
 
 if __name__ == "__main__":
     main()

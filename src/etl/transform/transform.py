@@ -2,13 +2,16 @@
     transformations
 """
 import pandas as pd
+from src.utils.logger import get_logger
+from src.etl.extract.extract import extract_player_id
 
+logger = get_logger('TRANFORMATION_PROCESS')
 game_stats_columns = ['SEASON_ID','TEAM_NAME','GAME_DATE','MATCHUP','WL','PTS',
                 'FGA','FG_PCT','FG3A','FG3_PCT','FTA','FT_PCT','PLUS_MINUS']
 player_stats_columns = ['PLAYER_ID','NAME','SEASON_ID','TEAM_ABBREVIATION',
                         'PLAYER_AGE','FGM','FG3M','REB','AST','GS','GP']
 
-def transform_games(data:pd.DataFrame, season_id:str|None = None) -> pd.DataFrame:
+def transform_games(data: pd.DataFrame, season_id: str | None = None) -> pd.DataFrame:
     """
     transform game data
     """
@@ -16,37 +19,29 @@ def transform_games(data:pd.DataFrame, season_id:str|None = None) -> pd.DataFram
         if season_id is not None:
             data = data.loc[data['SEASON_ID'] == season_id,:]
     except pd.errors.DataError as e:
-        print(f'Data error occured: {e}')
+        logger.error('Data error occured: %s', e)
+        raise
     return data[game_stats_columns]
 
 
-def transform_player_stats(data:pd.DataFrame,players_list:list[str]) -> pd.DataFrame:
+def transform_player_stats(data: pd.DataFrame) -> pd.DataFrame:
     """
         transform player data stats
     """
     try:
-        players_id = get_players_id(data, players_list)
+        players_id = extract_player_id()
         for player_id, player_name in players_id.items():
             data.loc[data['PLAYER_ID'] == player_id, 'NAME'] = player_name
         data = get_average_stats(data[player_stats_columns])
         data = melt_table(data)
     except pd.errors.DataError as e:
-        print(f'Data Error occured: {e}')
+        logger.error('Data Error occured: %s',e)
+        raise
     return data
 
 # Helper Functions
-def get_players_id(data:pd.DataFrame,players_list:list[str]) -> dict[int,str]:
-    """
-        get dictionary of player's names & their id
-    """
-    player_id = [data['id'].loc[data['full_name'] == player] for player in players_list]
-    player_id = [id.values[0] for id in player_id]
 
-    id_to_name = dict(zip(player_id,players_list))
-
-    return id_to_name
-
-def get_average_stats(data:pd.DataFrame) -> pd.DataFrame:
+def get_average_stats(data: pd.DataFrame) -> pd.DataFrame:
     """
         get average of essential stats
     """
@@ -67,7 +62,7 @@ def get_average_stats(data:pd.DataFrame) -> pd.DataFrame:
 
     return player_stats_avg_df
 
-def melt_table(data:pd.DataFrame) -> pd.DataFrame:
+def melt_table(data: pd.DataFrame) -> pd.DataFrame:
     """
         create table of each stat of a player as a row
     """
