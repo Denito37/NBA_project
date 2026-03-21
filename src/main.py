@@ -4,10 +4,10 @@ Entry point for ETL pipeline
 import asyncio
 from typing import Callable
 import pandas as pd
-from src.utils.logger import get_logger
-from src.etl.extract.extract import extract_team_stats
-from src.etl.transform.transform import transform_games
-from src.etl.load.load import load_to_sql
+from src.logger import get_logger
+from src.etl.extract import extract_team_stats
+from src.etl.transform import transform_games
+from src.etl.load import load_to_sql
 
 logger = get_logger('ETL_PROCESS')
 

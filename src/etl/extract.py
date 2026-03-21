@@ -4,7 +4,7 @@ Docstring for src.extract.extract
 from nba_api.stats.endpoints import playercareerstats, leaguegamefinder
 from nba_api.stats.static import players
 import pandas as pd
-from src.utils.logger import get_logger
+from src.logger import get_logger
 
 logger = get_logger('EXTRACTION STARTED')
 

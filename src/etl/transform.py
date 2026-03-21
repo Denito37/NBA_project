@@ -2,8 +2,8 @@
     transformations
 """
 import pandas as pd
-from src.utils.logger import get_logger
-from src.etl.extract.extract import extract_player_id
+from src.logger import get_logger
+from src.etl.extract import extract_player_id
 
 logger = get_logger('TRANFORMATION_PROCESS')
 game_stats_columns = ['SEASON_ID','TEAM_NAME','GAME_DATE','MATCHUP','WL','PTS',

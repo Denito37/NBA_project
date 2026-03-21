@@ -4,6 +4,3 @@
     - Is there a peak age in a player's career? [Line plot analysis]
 
 ### Background Info
-
-### Sample set
-    - Knick's roster
