@@ -9,4 +9,4 @@ def test_extract_team_stats():
     """
         test extract_team_stats
     """
-    assert extract_team_stats() == type(pd.DataFrame)
+    assert type(extract_team_stats().all()) == pd.Series
