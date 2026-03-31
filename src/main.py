@@ -5,8 +5,8 @@ import asyncio
 from typing import Callable
 import pandas as pd
 from src.logger import get_logger
-from src.etl.extract import extract_team_stats
-from src.etl.transform import transform_games
+from src.etl.extract import extract_team_stats, extract_player_stats
+from src.etl.transform import transform_games, transform_player_stats
 from src.etl.load import load_to_sql
 
 logger = get_logger('ETL_PROCESS')
@@ -34,6 +34,14 @@ def main():
                 transform_games,
                 load_to_sql,
                 'Team_data'
+            )
+        )
+        asyncio.run(
+            pipeline(
+                extract_player_stats,
+                transform_player_stats,
+                load_to_sql,
+                'Player_stats'
             )
         )
 

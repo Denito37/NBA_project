@@ -11,6 +11,17 @@ st.title('NBA Performace Report')
 # connect to database
 conn = sqlite3.connect('NBA.db')
 
+def melt_table(data: pd.DataFrame) -> pd.DataFrame:
+    """
+        create table of each stat of a player as a row
+    """
+    data = data.melt(
+    id_vars='NAME',
+    var_name='STATS',
+    value_name='VALUE'
+    )
+    return data
+
 teams = pd.read_sql(
     """
     SELECT DISTINCT TEAM_NAME
@@ -21,6 +32,15 @@ teams = pd.read_sql(
 NBA_teams = list(teams.values)
 NBA_teams = sorted(NBA_teams)
 NBA_teams = np.array(NBA_teams).flatten().tolist()
+
+players = pd.read_sql(
+    """
+        SELECT DISTINCT NAME
+        FROM Player_stats
+    """
+,conn)
+NBA_players = sorted(list(players.values))
+NBA_players = np.array(NBA_players).flatten().tolist()
 # Tabs
 tab1, tab2 = st.tabs(['Teams', 'Players'])
 
@@ -96,5 +116,77 @@ with tab1:
 
 # Player Tab
 with tab2:
-    choice = st.selectbox("Select Player", ('Jalen Brunson'))
-    st.caption(f"{choice}'s player data 2015 - Present ")
+    choice = st.selectbox("Select Player", (NBA_players))
+    st.caption(f"{choice}'s player data")
+    player_df = pd.read_sql_query(
+        f"""
+            SELECT *
+            FROM Player_stats
+            WHERE NAME = '{choice}'
+        """,conn
+    )
+    PPG = pd.read_sql_query(
+            f"""
+                SELECT AVG(POINTS_PG)
+                FROM Player_stats
+                WHERE NAME = '{choice}'
+            """
+        ,conn)
+    ASTPG = pd.read_sql_query(
+            f"""
+                SELECT AVG(AST_PG)
+                FROM Player_stats
+                WHERE NAME = '{choice}'
+            """
+        ,conn)
+    REBPG = pd.read_sql_query(
+            f"""
+                SELECT AVG(REB_PG)
+                FROM Player_stats
+                WHERE NAME = '{choice}'
+            """
+        ,conn)
+    AVG_PPG = pd.read_sql_query(
+            """
+                SELECT AVG(POINTS_PG)
+                FROM Player_stats
+            """
+        ,conn)
+    AVG_APG = pd.read_sql_query(
+            """
+                SELECT AVG(AST_PG)
+                FROM Player_stats
+            """
+        ,conn)
+    AVG_RPG = pd.read_sql_query(
+            """
+                SELECT AVG(REB_PG)
+                FROM Player_stats
+            """
+        ,conn)
+    PPG_CHANGE = np.round((PPG.values - AVG_PPG.values),decimals=3)
+    APG_CHANGE = np.round((ASTPG.values - AVG_APG.values),decimals=3)
+    RPG_CHANGE = np.round((REBPG.values - AVG_RPG.values),decimals=3)
+
+    metric1, metric2, metric3 = st.columns(3)
+    metric1.metric(
+        label='Points PG',
+        value= np.round(PPG.values, decimals=3),
+        delta= float(PPG_CHANGE[0][0])
+    )
+    metric2.metric(
+        label='Assits PG',
+        value= np.round(ASTPG.values, decimals=3),
+        delta= float(APG_CHANGE[0][0])
+    )
+    metric3.metric(
+        label='Rebounds PG',
+        value= np.round(REBPG.values, decimals=3),
+        delta= float(RPG_CHANGE[0][0])
+    )
+    st.bar_chart(
+        melt_table(player_df),
+        x='STATS',
+        y = 'VALUE',
+        color='STATS'
+    )

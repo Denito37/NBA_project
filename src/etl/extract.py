@@ -1,12 +1,14 @@
 """
 Docstring for src.extract.extract
 """
+import requests
+import time
 from nba_api.stats.endpoints import playercareerstats, leaguegamefinder
 from nba_api.stats.static import players
 import pandas as pd
 from src.logger import get_logger
 
-logger = get_logger('EXTRACTION STARTED')
+logger = get_logger('EXTRACTION: ')
 
 
 def extract_team_stats() -> pd.DataFrame:
@@ -18,7 +20,8 @@ def extract_team_stats() -> pd.DataFrame:
         team_games = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
     except TimeoutError as e:
         logger.error('Timeout Error occured: %s',e)
-        raise
+    except requests.exceptions.ReadTimeout as e:
+        logger.error('Timeout Error occured: %s',e)
 
     return team_games
 
@@ -31,14 +34,23 @@ def extract_player_stats() -> pd.DataFrame:
     try:
         player_dict = extract_player_id()
         id_list = list(player_dict.keys())
+        id_list = sorted(id_list)
+        # data point causes errors id: 1630828
+        id_list.pop(289)
         team_df = pd.DataFrame()
-        for player in id_list:
+        for i , player in enumerate(id_list):
+            if i % 10 == 0:
+                time.sleep(5)
             player_career = playercareerstats.PlayerCareerStats(player_id=player)
             player_stats = player_career.career_totals_regular_season.get_data_frame()
-            team_df = pd.concat([team_df,player_stats], ignore_index=True)
+            if not player_stats.isnull().values.any() and not player_stats.empty:
+                team_df = pd.concat([team_df,player_stats], ignore_index=True)
     except TimeoutError as e:
         logger.error('Timeout Error occured: %s',e)
-        raise
+    except KeyError as e:
+        logger.error('keyerror Error occured: %s',e)
+    except requests.exceptions.ReadTimeout as e:
+        logger.error('Timeout Error occured: %s',e)
     return team_df
 
 # helper functions
