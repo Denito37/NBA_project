@@ -3,9 +3,9 @@ Docstring for src.extract.extract
 """
 import requests
 import time
+import pandas as pd
 from nba_api.stats.endpoints import playercareerstats, leaguegamefinder
 from nba_api.stats.static import players
-import pandas as pd
 from src.logger import get_logger
 
 logger = get_logger('EXTRACTION: ')
@@ -32,12 +32,12 @@ def extract_player_stats() -> pd.DataFrame:
 
     """
     try:
+        team_df = pd.DataFrame()
         player_dict = extract_player_id()
         id_list = list(player_dict.keys())
-        id_list = sorted(id_list)
         # data point causes errors id: 1630828
-        id_list.pop(289)
-        team_df = pd.DataFrame()
+        removed_id = 1630828
+        id_list.remove(removed_id)
         for i , player in enumerate(id_list):
             if i % 10 == 0:
                 time.sleep(5)
