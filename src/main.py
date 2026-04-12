@@ -51,7 +51,7 @@ def main():
 
         logger.info("ETL job completed successfully")
     except TimeoutError as e:
-        logger.error('Pipeline failed: %s',e)
+        logger.exception('Pipeline failed: %s',e)
 
 if __name__ == "__main__":
     main()
