@@ -19,8 +19,10 @@ def transform_games(data: pd.DataFrame, season_id: str | None = None) -> pd.Data
         return data[game_stats_columns]
     except pd.errors.DataError as e:
         logger.exception('Data error occurred: %s', e)
+        raise
     except KeyError as e:
         logger.exception('KeyError occurred: %s',e)
+        raise
 
 
 def transform_player_stats(data: pd.DataFrame, agg:bool = True) -> pd.DataFrame:
@@ -30,7 +32,8 @@ def transform_player_stats(data: pd.DataFrame, agg:bool = True) -> pd.DataFrame:
     removed_id = 1630828
     players_id = extract_player_id()
     id_list = list(players_id.keys())
-    id_list.remove(removed_id)
+    if removed_id in id_list:
+        id_list.remove(removed_id)
     try:
         for player_id, player_name in players_id.items():
             if player_id != removed_id:
@@ -41,8 +44,10 @@ def transform_player_stats(data: pd.DataFrame, agg:bool = True) -> pd.DataFrame:
             return get_average_stats(data)
     except pd.errors.DataError as e:
         logger.exception('Data Error occurred: %s',e)
+        raise
     except KeyError as e:
         logger.exception('KeyError occurred: %s',e)
+        raise
 
 # Helper Functions
 
@@ -68,10 +73,13 @@ def get_average_stats(data: pd.DataFrame) -> pd.DataFrame:
         return new_df
     except pd.errors.DataError as e:
         logger.exception('Data Error occurred: %s',e)
+        raise
     except KeyError as e:
         logger.exception('KeyError occurred: %s',e)
+        raise
     except ZeroDivisionError as e:
         logger.exception('Error occurred: %s',e)
+        raise
 
 def aggregate_stats(data: pd.DataFrame) -> pd.DataFrame:
     """

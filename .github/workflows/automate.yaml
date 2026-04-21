@@ -1,0 +1,17 @@
+name: Scheduled Python Script
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at 00:00 UTC
+  workflow_dispatch:      # Allows manual triggers from the [Actions tab](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow)
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: |
+          python -m src.main
