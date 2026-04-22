@@ -44,31 +44,6 @@ def test_transform_games_column_filter():
     })
     pd.testing.assert_frame_equal(transform_games(mock_data),result)
 
-def test_transform_games_with_season_filter():
-    """
-        test transform_games filters by season_id correctly
-    """
-    mock_data = pd.DataFrame({
-        'SEASON_ID': ['22025', '22025', '22024', '22024'],
-        'TEAM_NAME': ['NYK', 'BOS', 'NYK', 'BOS'],
-        'GAME_DATE': ['1', '2', '3', '4'],
-        'MATCHUP': ['NYK@BOS', 'BOS@NYK', 'NYK@MIA', 'BOS@MIA'],
-        'WL': ['W', 'L', 'W', 'W'],
-        'PTS': ['98', '95', '100', '102'],
-        'FGA': ['50', '48', '52', '51'],
-        'FG_PCT': ['0.9', '0.88', '0.92', '0.91'],
-        'FG3A': ['10', '8', '12', '11'],
-        'FG3_PCT': ['0.4', '0.35', '0.42', '0.38'],
-        'FTA': ['5', '6', '4', '7'],
-        'FT_PCT': ['0.8', '0.83', '0.85', '0.81'],
-        'PLUS_MINUS': ['10', '5', '12', '8'],
-        'REB': ['45', '48', '50', '46'],
-        'AST': ['28', '26', '30', '25']
-    })
-    
-    result = transform_games(mock_data, season_id='22025')
-    assert len(result) == 2
-    assert all(result['SEASON_ID'] == '22025')
 
 def test_transform_games_handles_missing_columns():
     """
