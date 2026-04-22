@@ -13,8 +13,11 @@ def transform_games(data: pd.DataFrame) -> pd.DataFrame:
     """
     transform game data to contain only needed columns
     """
+    cleaned_data = []
     try:
-        return data[game_stats_columns]
+        if not data.empty:
+            cleaned_data = data[game_stats_columns]
+        return cleaned_data
     except pd.errors.DataError as e:
         logger.exception('Data error occurred: %s', e)
         raise
@@ -27,6 +30,7 @@ def transform_player_stats(data: pd.DataFrame, agg:bool = True) -> pd.DataFrame:
     """
         transform player data stats to enrich data on player's stats
     """
+    # data point causes errors id: 1630828
     removed_id = 1630828
     players_id = extract_player_id()
     id_list = list(players_id.keys())

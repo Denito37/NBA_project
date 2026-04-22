@@ -18,9 +18,10 @@ async def load_to_sql(table_name: str, data_frame: pd.DataFrame) -> None:
     """
         load data to sql database
     """
-    data_frame.to_sql(
-        name = table_name,
-        con=engine,
-        if_exists='replace',
-        index=False
-    )
+    if not data_frame.empty:
+        data_frame.to_sql(
+            name = table_name,
+            con=engine,
+            if_exists='replace',
+            index=False
+        )

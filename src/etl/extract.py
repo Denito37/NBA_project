@@ -14,10 +14,11 @@ logger = get_logger('EXTRACTION: ')
 def extract_team_stats() -> pd.DataFrame:
     """
     extract data on NBA team's games
-    optional team_code parameter to filter data based on what team played
     """
     try:
-        team_games = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
+        team_games:pd.DataFrame = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
+        if team_games.empty:
+            logger.warning('Teams data is empty')
         return team_games
     except TimeoutError as e:
         logger.exception('Timeout Error occured: %s',e)
@@ -28,7 +29,6 @@ def extract_team_stats() -> pd.DataFrame:
 def extract_player_stats() -> pd.DataFrame:
     """
     extracts data on list of player's id provided
-    optional team_code parameter to filter data based on when they player on a certain team
 
     """
     team_df = pd.DataFrame()
