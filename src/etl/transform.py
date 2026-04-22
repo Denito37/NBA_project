@@ -15,7 +15,7 @@ def transform_games(data: pd.DataFrame) -> pd.DataFrame:
     """
     cleaned_data = []
     try:
-        if not data.empty and data is not None:
+        if data is not None:
             cleaned_data = data[game_stats_columns]
         return cleaned_data
     except pd.errors.DataError as e:

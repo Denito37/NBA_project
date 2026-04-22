@@ -17,7 +17,7 @@ def extract_team_stats() -> pd.DataFrame:
     """
     try:
         team_games:pd.DataFrame = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
-        if team_games.empty or team_games is None:
+        if team_games is None or team_games.empty:
             logger.warning('Teams data is empty')
         return team_games
     except TimeoutError as e:
