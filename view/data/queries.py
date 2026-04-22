@@ -1,6 +1,13 @@
 import pandas as pd
 
 # Team_data Queries
+def get_team_stats(conn) -> pd.DataFrame:
+    query = """ 
+            SELECT *
+            FROM Team_data
+        """
+    return pd.read_sql_query(query,conn)
+
 def get_teams(current_season: str, conn) -> pd.DataFrame:
     query = "SELECT DISTINCT TEAM_NAME FROM Team_data WHERE SEASON_ID = ?"
     return pd.read_sql_query(query, conn, params=(current_season,))

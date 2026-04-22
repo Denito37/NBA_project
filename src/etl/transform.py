@@ -9,13 +9,11 @@ logger = get_logger('TRANFORMATION_PROCESS: ')
 game_stats_columns = ['SEASON_ID','TEAM_NAME','GAME_DATE','MATCHUP','WL','PTS',
                 'FGA','FG_PCT','FG3A','FG3_PCT','FTA','FT_PCT','PLUS_MINUS']
 
-def transform_games(data: pd.DataFrame, season_id: str | None = None) -> pd.DataFrame:
+def transform_games(data: pd.DataFrame) -> pd.DataFrame:
     """
     transform game data to contain only needed columns
     """
     try:
-        if season_id is not None:
-            data = data.loc[data['SEASON_ID'] == season_id,:]
         return data[game_stats_columns]
     except pd.errors.DataError as e:
         logger.exception('Data error occurred: %s', e)

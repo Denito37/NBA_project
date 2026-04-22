@@ -11,7 +11,19 @@ from src.etl.load import load_to_sql
 
 logger = get_logger('ETL_PROCESS')
 
-async def pipeline(extract: Callable[[str|None], pd.DataFrame]
+async def team_pipeline(extract: Callable[[str|None], pd.DataFrame]
+                , transform: Callable[[pd.DataFrame], pd.DataFrame]
+                , load: Callable[[str, pd.DataFrame],None]
+                , table_name:str
+                ) -> None:
+    """
+        pipeline function
+    """
+    nba_data = extract()
+    cleaned_data = transform(nba_data)
+    await load(table_name,cleaned_data)
+
+async def player_pipeline(extract: Callable[[str|None], pd.DataFrame]
                 , transform: Callable[[pd.DataFrame, bool | None], pd.DataFrame]
                 , load: Callable[[str, pd.DataFrame],None]
                 , table_name:str
@@ -32,7 +44,7 @@ def main():
         logger.info("Starting ETL job...")
 
         asyncio.run(
-            pipeline(
+            team_pipeline(
                 extract_team_stats,
                 transform_games,
                 load_to_sql,
@@ -40,7 +52,7 @@ def main():
             )
         )
         asyncio.run(
-            pipeline(
+            player_pipeline(
                 extract_player_stats,
                 transform_player_stats,
                 load_to_sql,

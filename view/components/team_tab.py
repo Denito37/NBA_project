@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data import queries
+from config import SEASON_ID
 
 def render_team_tab(teams: pd.DataFrame, conn):
-    
-    NBA_TEAMS = sorted(list(teams.values))
+    team_list = queries.get_teams(SEASON_ID, conn)
+    NBA_TEAMS = sorted(list(team_list.values))
     NBA_TEAMS = np.array(NBA_TEAMS).flatten().tolist()
     selected_team = st.selectbox("Select Team", NBA_TEAMS)
 
@@ -38,12 +39,12 @@ def _display_team_metrics(team: str, conn):
     last_10_FG_PCT.metric(
         label='FG_PCT Last 10 Average',
         value= np.round(FG_PCT_l10, decimals=3),
-        delta=float(PCT_change)
+        delta=float(PCT_change[0][0])
     )
     last_10_FG3_PCT.metric(
         label='FG3_PCT Last 10 Average',
         value= np.round(FG3_PCT_l10, decimals=3),
-        delta=float(PCT3_change)
+        delta=float(PCT3_change[0][0])
     )
 
 def _display_team_chart(team: pd.DataFrame):

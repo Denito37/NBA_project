@@ -7,14 +7,13 @@ from components import player_tab
 from components import team_tab
 from data.db import get_db_connection
 from data import queries
-from config import SEASON_ID
 
 
 def main():
     st.title('NBA Team Performance Dashboard')
 
     with get_db_connection() as conn:
-        teams:pd.DataFrame = queries.get_teams(SEASON_ID,conn)
+        teams:pd.DataFrame = queries.get_team_stats(conn)
         players:pd.DataFrame = queries.get_players_stats(conn)
 
         tab1,tab2 = st.tabs(['Teams', 'Players'])
