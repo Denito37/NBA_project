@@ -38,7 +38,7 @@ def transform_player_stats(data: pd.DataFrame, agg:bool = True) -> pd.DataFrame:
         id_list.remove(removed_id)
     try:
         for player_id, player_name in players_id.items():
-            if player_id != removed_id:
+            if  data is not None and player_id != removed_id:
                 data.loc[data['PLAYER_ID'] == player_id, 'NAME'] = player_name
         if agg:
             return aggregate_stats(get_average_stats(data))
@@ -60,24 +60,28 @@ def get_average_stats(data: pd.DataFrame) -> pd.DataFrame:
     points_per_field_goal = 2
     points_per_field_goal_3 = 3
     try:
-        FGMA = (data['FGM']/data['GP']) * points_per_field_goal
-        FG3MA = (data['FG3M']/data['GP']) * points_per_field_goal_3
-        FTMA = data['FTM']/data['GP']
-        new_df = data.assign(
-            POINTS_PG = FG3MA + FGMA + FTMA,
-            MIN_PG = data['MIN']/data['GP'],
-            REB_PG = data['REB']/data['GP'],
-            AST_PG = data['AST']/data['GP'],
-            STL_PG = data['STL']/data['GP'],
-            BLK_PG = data['BLK']/data['GP'],
-        )
+        if len(data) > 0:
+            FGMA = (data['FGM']/data['GP']) * points_per_field_goal
+            FG3MA = (data['FG3M']/data['GP']) * points_per_field_goal_3
+            FTMA = data['FTM']/data['GP']
+            new_df = data.assign(
+                POINTS_PG = FG3MA + FGMA + FTMA,
+                MIN_PG = data['MIN']/data['GP'],
+                REB_PG = data['REB']/data['GP'],
+                AST_PG = data['AST']/data['GP'],
+                STL_PG = data['STL']/data['GP'],
+                BLK_PG = data['BLK']/data['GP'],
+            )
 
-        return new_df
+            return new_df
     except pd.errors.DataError as e:
         logger.exception('Data Error occurred: %s',e)
         raise
     except KeyError as e:
         logger.exception('KeyError occurred: %s',e)
+        raise
+    except TypeError as e:
+        logger.exception('TypeError occured: %s',e)
         raise
     except ZeroDivisionError as e:
         logger.exception('Error occurred: %s',e)
