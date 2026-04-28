@@ -60,7 +60,7 @@ def get_average_stats(data: pd.DataFrame) -> pd.DataFrame:
     points_per_field_goal = 2
     points_per_field_goal_3 = 3
     try:
-        if len(data) > 0:
+        if data is not None and len(data) > 0:
             FGMA = (data['FGM']/data['GP']) * points_per_field_goal
             FG3MA = (data['FG3M']/data['GP']) * points_per_field_goal_3
             FTMA = data['FTM']/data['GP']
@@ -91,14 +91,17 @@ def aggregate_stats(data: pd.DataFrame) -> pd.DataFrame:
     """
         aggregate essential stats for NBA players
     """
-    player_stats_avg_df = data.groupby('NAME',as_index=False).agg({
-    'MIN_PG':'mean',
-    'POINTS_PG':'mean',
-    'AST_PG':'mean',
-    'REB_PG':'mean',
-    'STL_PG':'mean',
-    'BLK_PG':'mean'
-    })
-    player_stats_avg_df = player_stats_avg_df.sort_values(by='POINTS_PG', ascending=False)
+    if data is not None and len(data) > 0:
+        player_stats_avg_df = data.groupby('NAME',as_index=False).agg({
+        'MIN_PG':'mean',
+        'POINTS_PG':'mean',
+        'AST_PG':'mean',
+        'REB_PG':'mean',
+        'STL_PG':'mean',
+        'BLK_PG':'mean'
+        })
+        player_stats_avg_df = player_stats_avg_df.sort_values(by='POINTS_PG', ascending=False)
 
-    return player_stats_avg_df
+        return player_stats_avg_df
+    else:
+        logger.warning('No Data to aggregate')
