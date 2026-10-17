@@ -25,4 +25,4 @@ jobs:
 
     - name: Run Script    
       run: |
-        python -m src.main
+        python3 src/nba_project/scripts/pipeline_runner.py

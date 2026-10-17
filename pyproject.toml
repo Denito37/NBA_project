@@ -1,0 +1,32 @@
+[project]
+name = "nba_project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Denito37", email = "69406178+Denito37@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "matplotlib==3.10.8",
+    "nba-api==1.11.4",
+    "nbclient==0.10.4",
+    "nbconvert==7.17.0",
+    "nbformat==5.10.4",
+    "nest-asyncio==1.6.0",
+    "numpy==2.4.2",
+    "pandas==2.3.3",
+    "pytest==9.0.2",
+    "pytest-mock==3.15.1",
+    "requests==2.32.5",
+    "sqlalchemy==2.0.47",
+    "streamlit==1.54.0",
+]
+
+[project.scripts]
+nba_project = "nba_project:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
