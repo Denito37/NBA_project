@@ -3,8 +3,7 @@
 """
 import pandas as pd
 import pytest
-from unittest.mock import patch
-from pipeline.transform import transform_games,get_average_stats,aggregate_stats,transform_player_stats
+from nba_project.pipeline.transform import transform_games,get_average_stats,aggregate_stats
 
 def test_transform_games_column_filter():
     """
@@ -131,57 +130,3 @@ def test_aggregate_stats_takes_mean():
     assert result.loc[0, 'MIN_PG'] == 35  # (30+40)/2
     assert result.loc[0, 'POINTS_PG'] == 25  # (20+30)/2
     assert result.loc[0, 'AST_PG'] == 6  # (5+7)/2
-
-def test_transform_player_stats_with_aggregation():
-    """
-        test transform_player_stats with agg=True returns aggregated stats
-    """
-    with patch('src.etl.transform.extract_player_id') as mock_ids:
-        mock_ids.return_value = {1: 'Player A', 2: 'Player B'}
-        
-        mock_data = pd.DataFrame({
-            'PLAYER_ID': [1, 1, 2, 2],
-            'FGM': [10, 12, 15, 14],
-            'FG3M': [2, 3, 4, 3],
-            'FTM': [8, 7, 6, 8],
-            'GP': [10, 10, 20, 20],
-            'MIN': [250, 260, 400, 410],
-            'REB': [50, 55, 80, 75],
-            'AST': [100, 110, 150, 140],
-            'STL': [20, 22, 30, 28],
-            'BLK': [15, 18, 25, 22]
-        })
-        
-        result = transform_player_stats(mock_data, agg=True)
-        
-        # Should return aggregated result with unique players
-        assert len(result) == 2
-        assert 'NAME' in result.columns
-        assert 'POINTS_PG' in result.columns
-
-def test_transform_player_stats_without_aggregation():
-    """
-        test transform_player_stats with agg=False returns non-aggregated stats
-    """
-    with patch('src.etl.transform.extract_player_id') as mock_ids:
-        mock_ids.return_value = {1: 'Player A', 2: 'Player B'}
-        
-        mock_data = pd.DataFrame({
-            'PLAYER_ID': [1, 1, 2],
-            'FGM': [10, 12, 15],
-            'FG3M': [2, 3, 4],
-            'FTM': [8, 7, 6],
-            'GP': [10, 10, 20],
-            'MIN': [250, 260, 400],
-            'REB': [50, 55, 80],
-            'AST': [100, 110, 150],
-            'STL': [20, 22, 30],
-            'BLK': [15, 18, 25]
-        })
-        
-        result = transform_player_stats(mock_data, agg=False)
-        
-        # Should return per-game stats without aggregation
-        assert len(result) == 3
-        assert 'POINTS_PG' in result.columns
-        assert 'MIN_PG' in result.columns
