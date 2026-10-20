@@ -4,7 +4,7 @@ from nba_project.pipeline.logger import get_logger
 from nba_project.pipeline.extract import Extract
 from nba_project.pipeline.transform import transform_games
 from nba_project.pipeline.load import Load
-from nba_project.config import POSTGRESQL_URL
+#from nba_project.config import POSTGRESQL_URL
 
 logger = get_logger('ETL_PROCESS')
 
