@@ -26,4 +26,4 @@ if __name__ == "__main__":
     source: pd.DataFrame = leaguegamefinder.LeagueGameFinder().get_data_frames()[0]
     destination = "NBA.db"
     NBA_Pipeline = Pipeline(source, destination)
-    NBA_Pipeline.run("Team_Stats")
+    NBA_Pipeline.run("NBA_Games")

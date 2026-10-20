@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data import queries
-from config import SEASON_ID
 
+SEASON_ID = 22025
 def render_team_tab(teams: pd.DataFrame, conn):
     team_list = queries.get_teams(SEASON_ID, conn)
     NBA_TEAMS = sorted(list(team_list.values))

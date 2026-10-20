@@ -1,17 +1,8 @@
 import pandas as pd
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine
 from nba_project.pipeline.logger import get_logger
 
 logger = get_logger('LOADING_PROCESS: ')
-URL = 'sqlite:///NBA.db'
-engine = create_engine(URL)
-
-with engine.connect() as conn:
-    conn.execute(text('PRAGMA journal_mod = WAL;'))
-
-Base = declarative_base()
-Base.metadata.create_all(engine)
 
 class Load:
     def __init__(self, db_path):

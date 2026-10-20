@@ -1,6 +1,8 @@
 import sqlite3
-from config import DB_PATH
 from contextlib import contextmanager
+
+DB_PATH = "NBA.db"
+URL = 'sqlite:///NBA.db'
 
 # connect to database
 @contextmanager
