@@ -9,6 +9,9 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -27,4 +30,4 @@ jobs:
 
     - name: Run Script    
       run: |
-        python -m src.nba_project.scripts.pipeline_runner
+        python -m nba_project.scripts.pipeline_runner
