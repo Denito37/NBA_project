@@ -13,11 +13,7 @@ def main():
 
     with get_db_connection() as conn:
         teams:pd.DataFrame = queries.get_team_stats(conn)
-
-        tab1,tab2 = st.tabs(['Teams', 'Players'])
-
-        with tab1: 
-            team_tab.render_team_tab(teams,conn)
+        team_tab.render_team_tab(teams,conn)
 
 
 if __name__ == "__main__":
