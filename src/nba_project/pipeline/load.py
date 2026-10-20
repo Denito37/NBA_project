@@ -7,9 +7,9 @@ logger = get_logger('LOADING_PROCESS: ')
 class Load:
     def __init__(self, db_path):
         self.destination = db_path
-        self.engine = create_engine(f"sqlite:///{self.destination}")
+        self.engine = create_engine(self.destination)
 
-    def load_to_sqlite(
+    def load_to_sql(
                         self,
                         table_name: str,
                         data_frame: pd.DataFrame
@@ -24,4 +24,4 @@ class Load:
                     )
         else:
             logger.warning('No data loaded')
-            raise
+            raise      
