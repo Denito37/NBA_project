@@ -7,10 +7,10 @@ RUN apt-get update && \
     build-essential && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY pyproject.toml uv.lock ./
 
-RUN pip install -r requirements.txt
+RUN uv sync --frozen --no-install-project --no-dev
 
 COPY . .
 
-CMD [ "python", "-m", "src.main" ]
+CMD [ "python", "-m", "nba_project.scripts.pipeline_runner" ]
