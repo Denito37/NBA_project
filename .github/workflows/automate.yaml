@@ -30,4 +30,4 @@ jobs:
 
     - name: Run Script    
       run: |
-        python -m nba_project.scripts.pipeline_runner
+        uv run python -m nba_project.scripts.pipeline_runner
