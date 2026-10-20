@@ -1,20 +1,22 @@
-# NBA Team Performance Dashboard
+# NBA GameBoard Dashboard
 
 ## Dashboard
-### Dashboard Overview
-Analyze NBA teams performance over the past decade (2015-2016 season -> 2025-2026 season) 
-
-### Dashboard Features
-- See how each player in a team contribute (Points, Assits, Rebounds) to the teams performance
-- See a team's recent performance (last 10 games) compared to their average performance over the past year
+- Get context into upcoming NBA games including
+    - NBA teams' over performance
+    - previous games of the same matchup
+    - NBA Reporter summary of other news (injury reports, etc.)
 
 ## Data Pipeline
-### Data Architecture Overview
-- Data Source: NBA Stats API
-- Business Logic: Python ETL Script
-- Data Destination: AWS RDS PostgreSQL database
-- Scheduler: GitHub Actions cron job scheduler
+```mermaid
+    flowchart LR
+    a(Data Source: NBA Stats API)
+    b(Data Desitination: PostgreSQL database)
 
-### Data Source Reference 
+    subgraph Box ["Orchestration: GitHub Actions Cron Job"]
+        a --Python_ETL_Script--> b
+    end
+```
+
+## References
 - NBA Stats API [Link](https://github.com/swar/nba_api)
     - An API client package to easily access the APIs of NBA.com
