@@ -15,4 +15,4 @@ RUN uv sync --frozen --no-install-project --no-dev
 
 COPY . .
 
-CMD [ "python", "-m", "nba_project.scripts.pipeline_runner" ]
+CMD [ "uv","run","python", "-m", "nba_project.scripts.pipeline_runner" ]

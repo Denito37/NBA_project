@@ -14,6 +14,10 @@ class Load:
                         table_name: str,
                         data_frame: pd.DataFrame
                         ) -> None:
+        """
+            load data into an SQL database \n
+            Note: data must be in a dataframe
+        """
         
         if data_frame is not None and len(data_frame) > 0:
             data_frame.to_sql(
@@ -23,5 +27,4 @@ class Load:
                         index=False
                     )
         else:
-            logger.warning('No data loaded')
-            raise      
+            logger.info('No data loaded')
